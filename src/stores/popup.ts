@@ -1,11 +1,16 @@
 import { defineStore } from 'pinia'
 
+type RootState = {
+    selectedPopup: number;
+    arrayShowPopup: boolean[];
+};
+
 export const usePopupStore = defineStore({
     id: 'popup',
     state: () => ({
         selectedPopup: 0,
-        arrayShowPopup: []
-    }),
+        arrayShowPopup: [],
+    } as RootState),
     getters: {},
     actions: {
         openPopup(id: number) {
