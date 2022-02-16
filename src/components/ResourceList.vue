@@ -2,6 +2,7 @@
 import ResourceItem from '@/components/ResourceItem.vue'
 import { defineComponent } from 'vue'
 import { usePopupStore } from '@/stores/popup'
+import { useResourceStore } from '@/stores/resource'
 
 export default defineComponent({
     components: { ResourceItem },
@@ -38,14 +39,17 @@ export default defineComponent({
 
     setup() {
         const popup = usePopupStore();
+        const resource = useResourceStore();
 
         return {
             popup,
+            resource,
         }
     },
 
     mounted() {
         let arr = [];
+        this.resource.setResources(this.resources);
         for (let index = 0; index < this.resources.length; index++) {
             arr.push(false);
         }
@@ -55,13 +59,32 @@ export default defineComponent({
 </script>
 
 <template>
+    <div class="action-bar">
+        <a class="delete-button" v-if="resource.selectedResourceIds && resource.selectedResourceIds.length">Delete</a>
+    </div>
     <div class="resource-list">
-        <ResourceItem v-for="item in resources" :key="item.id" :item="item" />
+        <ResourceItem v-for="item in resource.resources" :key="item.id" :item="item" />
     </div>
 </template>
 
 <style scoped>
 .resource-list {
     padding: 0 2rem;
+}
+
+.action-bar {
+    margin: 0 2rem 1rem;
+    min-height: 1.5rem;
+}
+
+.delete-button {
+    text-decoration: none;
+    border: 1px solid #DE1C22;
+    color: #DE1C22;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
 }
 </style>

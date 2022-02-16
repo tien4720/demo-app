@@ -2,31 +2,49 @@
 import Popover from '@/components/Popover.vue'
 import { defineComponent } from 'vue'
 import { usePopupStore } from '@/stores/popup'
+import { useResourceStore } from '@/stores/resource'
 
 export default defineComponent({
     components: { Popover },
     props: ['item'],
     setup() {
         const popup = usePopupStore();
+        const resource = useResourceStore();
+
         function openPopup(id: number) {
             popup.openPopup(id);
         }
 
+        function selectResource(id: number) {
+            resource.selectResource(id);
+        }
+
+        function checkSelectedResource(id: number) {
+            return resource.selectedResourceIds.includes(id);
+        }
+
         return {
             popup,
+            resource,
             openPopup,
+            selectResource,
+            checkSelectedResource,
         }
     },
 })
 </script>
 
 <template>
-    <div class="resource-item">
+    <div class="resource-item" :class="{ selected: checkSelectedResource(item.id) }">
         <div class="item">
             <div class="item-group">
-                <div class="item-img">
+                <!-- <div class="item-img">
                     <img src="@/assets/widget.png" />
-                </div>
+                </div> -->
+                <label class="checkbox-container">
+                    <input type="checkbox" @click="selectResource(item.id)">
+                    <span class="checkmark"></span>
+                </label>
                 <div class="item-content">
                     <div class="item-title" :class="{ active: popup.arrayShowPopup[popup.selectedPopup] && item.id === popup.selectedPopup }" @click="openPopup(item.id)">{{item.name}}</div>
                     <div class="item-description">
@@ -47,7 +65,15 @@ export default defineComponent({
     display: flex;
     width: 100%;
     border-bottom: 1px solid #EAEAEB;
-    padding: 1rem 0;
+    padding: 1rem;
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+}
+
+.resource-item.selected {
+    background: rgba(11, 92, 191, 0.04);
+    border-radius: 3px;
 }
 
 .item {
@@ -63,6 +89,7 @@ export default defineComponent({
 .item-content {
     letter-spacing: 0.2px;
     font-size: 0.75rem;
+    padding-left: 1.5rem;
 }
 
 .item-title {

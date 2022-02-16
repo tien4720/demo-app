@@ -9,9 +9,7 @@ import ResourceList from '@/components/ResourceList.vue'
             <div class="page-sub-title">4 resources</div>
             <a class="normal-button">Create Resource</a>
         </div>
-        <div class="resource-list">
-            <ResourceList />
-        </div>
+        <ResourceList />
     </main>
 </template>
 
