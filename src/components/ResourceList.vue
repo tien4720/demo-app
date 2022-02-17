@@ -1,39 +1,16 @@
 <script lang="ts">
 import ResourceItem from '@/components/ResourceItem.vue'
 import { defineComponent } from 'vue'
+import { VueFinalModal } from 'vue-final-modal'
 import { usePopupStore } from '@/stores/popup'
 import { useResourceStore } from '@/stores/resource'
 
 export default defineComponent({
-    components: { ResourceItem },
-
+    components: { VueFinalModal, ResourceItem },
+    props: ['showModal'],
     data() {
         return {
-            resources: [{
-                id: 1,
-                name: 'resource_name',
-                extraInfo: ['Virtual Host name', 'Protocol', 'connector_name'],
-                types: ['design', 'marketing', 'human_resource', 'sourcing', 'sales', 'finance', '+4'],
-                description: 'This resource is at server room at 2nd floor in Block B of the building. Need to contact Mike for access'
-            }, {
-                id: 2,
-                name: 'skype_server',
-                extraInfo: ['skype.secureage.com', 'TCP/UDP', 'connector_1'],
-                types: ['design'],
-                description: 'This resource is at server room at 2nd floor in Block B of the building. Need to contact Mike for access'
-            }, {
-                id: 3,
-                name: 'slack_server',
-                extraInfo: ['IPv4', 'UDP', 'No Connector'],
-                types: ['design', 'product'],
-                description: 'This resource is at server room at 2nd floor in Block B of the building. Need to contact Mike for access'
-            }, {
-                id: 4,
-                name: 'seams_server',
-                extraInfo: ['IPv6', 'UDP', 'connector_3'],
-                types: [],
-                description: 'This resource is at server room at 2nd floor in Block B of the building. Need to contact Mike for access'
-            }]
+            showModal: false
         };
     },
 
@@ -41,29 +18,54 @@ export default defineComponent({
         const popup = usePopupStore();
         const resource = useResourceStore();
 
+        function onDeleteResources() {
+            resource.deleteSelectedResources();
+            this.showModal = false;
+        }
+
         return {
             popup,
             resource,
+            onDeleteResources,
         }
     },
 
     mounted() {
         let arr = [];
-        this.resource.setResources(this.resources);
-        for (let index = 0; index < this.resources.length; index++) {
+        for (let index = 0; index < this.resource.resources.length; index++) {
             arr.push(false);
         }
         this.popup.setArrayShowPopup(arr);
+    },
+
+    computed: {
+        selectedResources() {
+            return this.resource.resources.filter((e: any) => this.resource.selectedResourceIds.includes(e.id));
+        }
     }
 })
 </script>
 
 <template>
     <div class="action-bar">
-        <a class="delete-button" v-if="resource.selectedResourceIds && resource.selectedResourceIds.length">Delete</a>
+        <a class="button delete-button" v-if="resource.selectedResourceIds && resource.selectedResourceIds.length" @click="showModal = true">Delete</a>
     </div>
+    <vue-final-modal v-model="showModal" name="delete-modal" classes="modal-container" content-class="modal-content">
+        <div class="modal-title">
+            Delete Resource
+        </div>
+        <div class="modal-body">
+            Are you sure you want to delete <span class="delete-items">[<span v-for="(item, index) in selectedResources" :key="item.id" class="resource-name"><span v-if="index > 0">, </span>{{item.name}}</span>]</span> ? This action cannot be undone.
+        </div>
+        <div class="modal-actions">
+            <a class="button cancel-button" @click="showModal = false">Cancel</a>
+            <a class="button delete-button solid" @click="onDeleteResources">Delete</a>
+        </div>
+    </vue-final-modal>
     <div class="resource-list">
-        <ResourceItem v-for="item in resource.resources" :key="item.id" :item="item" />
+        <TransitionGroup name="fade">
+            <ResourceItem v-for="item in resource.resources" :key="item.id" :item="item" />
+        </TransitionGroup>
     </div>
 </template>
 
@@ -77,14 +79,37 @@ export default defineComponent({
     min-height: 1.5rem;
 }
 
-.delete-button {
+.button {
     text-decoration: none;
-    border: 1px solid #DE1C22;
-    color: #DE1C22;
     padding: 0.75rem 1.5rem;
     cursor: pointer;
     font-weight: 600;
     border-radius: 0.25rem;
     font-size: 0.75rem;
+}
+
+.delete-button {
+    border: 1px solid #DE1C22;
+    color: #DE1C22;
+}
+
+.cancel-button {
+    border: 1px solid #BEC0C5;
+    color: #202532;
+    margin-right: 1rem;
+}
+
+.delete-button.solid {
+    background-color: #DE1C22;
+    color: #FFFFFF;
+}
+
+.delete-items {
+    color: #DE1C22;
+}
+
+.resource-name {
+    display: inline-block;
+    padding: 0 0.2rem;
 }
 </style>

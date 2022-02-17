@@ -1,12 +1,25 @@
-<script setup lang="ts">
+<script lang="ts">
 import ResourceList from '@/components/ResourceList.vue'
+import { useResourceStore } from '@/stores/resource'
+
+export default {
+    components: { ResourceList },
+    props: ['resource'],
+    setup() {
+        const resource = useResourceStore();
+
+        return {
+            resource,
+        }
+    },
+}
 </script>
 
 <template>
     <main class="page-content">
         <div class="page-heading">
             <div class="page-title">Resources</div>
-            <div class="page-sub-title">4 resources</div>
+            <div class="page-sub-title">{{resource.resources.length}} resources</div>
             <a class="normal-button">Create Resource</a>
         </div>
         <ResourceList />
