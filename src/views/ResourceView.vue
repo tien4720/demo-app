@@ -7,7 +7,7 @@ export default {
     props: ['resource'],
     setup() {
         const resource = useResourceStore();
-
+        resource.resetSelectedResources();
         return {
             resource,
         }

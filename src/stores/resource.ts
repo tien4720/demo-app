@@ -50,5 +50,8 @@ export const useResourceStore = defineStore({
             this.resources = this.resources.filter((e: any) => !this.selectedResourceIds.includes(e.id));
             this.selectedResourceIds = [];
         },
+        resetSelectedResources() {
+            this.selectedResourceIds = [];
+        },
     }
 })
