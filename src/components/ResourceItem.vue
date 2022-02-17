@@ -74,7 +74,6 @@ export default defineComponent({
 .resource-item.selected {
     background: rgba(11, 92, 191, 0.04);
     border-radius: 3px;
-    transition: background 0.2s ease-in;
 }
 
 .item {
